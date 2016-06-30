@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Israeli Municipal Tax (Arnona) Map</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- source data from: https://docs.google.com/spreadsheets/d/1pC4OYhxWZZeLyLYbSC9da1o8ua0qOdz-exmQupMbFa0/edit#gid=1677260747 -->
+
+	<!--bootstrap css -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+	<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+
+	<link rel="stylesheet" href="css/style.css" />
+
+	<!--jquery js-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!--bootstrap js -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<script src="dist/papaparse.min.js"></script>
+<!-- 	 <script src="dist/PruneCluster.js"></script> -->
+	<!--
+	<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+	<script src="http://jquery-csv.googlecode.com/git/src/jquery.csv.js"></script>
+	-->
+
+</head>
+<body>
+
+
+	<!-- <div id="header-wrap">
+    	<h3>מפת הארנונה</h3>
+  		
+	</div> -->
+	<div id='legend' style='display:none;'>
+	  <div class='legend-title'>
+	  	<p><strong>מפת יוקר הארנונה בראי משרד הפנים:</strong> ההפרש בין התעריף בפועל לתעריף הנורמטיבי</p>
+	  	<p>כל התעריפים המצוינים במפה הם ש״ח למטר מגורים ממוצע (מתואם לשיטת נטו)</p> 
+	  </div>
+	  <nav class='legend clearfix'>
+	  	<!-- http://colorbrewer2.org/ -->
+	    <span style='background:#1550a3;'></span>
+	    <span style='background:#fee5d9;'></span>
+	    <span style='background:#fcbba1;'></span>
+	    <span style='background:#fc9272;'></span>
+	    <span style='background:#fb6a4a;'></span>
+	    <span style='background:#de2d26;'></span>
+	    <span style='background:#a50f15;'></span>
+	    <label>ֿ0 &gt</label>
+	    <label>&lt 5</label>
+	    <label>&lt 10</label>
+	    <label>&lt 15</label>
+	    <label>&lt 20</label>
+	    <label>&lt 25</label>
+	    <label>+25</label>
+	    <small>Source: <a href="http://muni-index.co.il">Yogev Sharvit</a></small>
+
+
+
+	</div>
+	<div id="map"></div>
+		
+
+	<script>
+
+		muni2ContentDict = {};
+
+		// Provide your access token
+		L.mapbox.accessToken = 'pk.eyJ1IjoiaWRvaXZyaSIsImEiOiJtSDZZd0dzIn0.AGwQs7X6LESuybqo6fUVpg#10';
+		// Create a map in the div #map
+		var map = L.mapbox.map('map', 'idoivri.061o0kcl').setView([32.06425, 34.769722], 9);
+		
+		map.legendControl.addLegend(document.getElementById('legend').innerHTML);		
+
+
+		Papa.parse("./data/munis-arnona.csv", {
+			header: false,
+			download: true,
+			complete: function(results) {
+
+				//console.log(results);
+				var len = results.data.length;
+
+				console.log(results.data[1]);
+
+				for (var i=1; i<len; i++){
+					//console.log(results.data[i]);
+					line = results.data[i];
+
+			        //console.log("COORDS: " + line[12] + "," + line[11]);
+			        if (line[0]===undefined || line[0]==="") {
+			        	console.log("No hebrew name for municipalitiy");	
+			        }
+			        else if (line[1]===undefined || line[1]==="") {
+			        	console.log("No english name for municipality "+line[0]+", can't extract polygon!");
+			        }
+			        else if (line[7]===undefined || line[7]==="" || line[9]===undefined || line[9]==="") {
+			        	console.log("No financial detail for "+line[0]);
+			        }
+			        else {
+
+			        	name = line[1]; //url name relies 
+
+
+
+						var urlString = 'https://cdn.rawgit.com/idoivri/israel-municipalities-polygons/master/'+name+'/'+name+'.geojson';
+
+						var getDifferenceColor = function (d) {
+							console.log("got difference ",d);
+						    return d < 0 ? '#1550a3' :
+						           d < 5  ? '#fee5d9' :
+						           d < 10  ? '#fcbba1' :
+						           d < 15  ? '#fc9272' :
+						           d < 20   ? '#fb6a4a' :
+						           d < 25   ? '#de2d26' :
+						                      '#a50f15';
+						}
+
+			        	var layerStyle = {
+								        fillColor: getDifferenceColor(line[9]-line[7]),
+								        color: 'black',
+								        weight: 0.5,
+								        fillOpacity: 0.6,
+									};
+
+
+						muni2ContentDict[name] = {
+							muniHebName: line[0],
+							layerStyle: layerStyle,
+							normative_arnona: line[7],
+							real_arnona: line[9],
+							difference_arnona: line[9]-line[7]
+						};
+						
+
+
+
+
+						// $.ajax({
+						// 		  url: urlString,
+						// 		  data: layerStyle,
+								 
+						// 		  success: function (data) {
+						// 		  		console.log("success (url):",this.url);
+						// 		  		geoJsonLayerData = data;
+						// 		  }
+						// 		});
+
+						// // var success = function (layerStyle, success, data) {
+
+
+						 $.get(urlString, layerStyle, function(data, success) {
+
+
+						 	if (success !== "success") {
+						 		console.log("$.get() did not return success!");
+						 		return;
+						 	}
+							
+						  	if (!data) {
+								console.log("did not get geoJsonLayerData!");
+								return;
+							}
+
+							var url = this.url;
+
+							var pathArray = url.split( '/' );
+							// console.log(pathArray);
+							// console.log(pathArray[6]);
+							var muniName = pathArray[6];
+
+							var muniObject = muni2ContentDict[muniName];
+							if (!muniObject) {
+								console.log("could not find muni object in dict!, muniName=",muniName);
+							}
+
+							var geojsonLayer = new L.GeoJSON(data, {style: muniObject.layerStyle}); 
+
+					        if (!geojsonLayer) {
+					        	console.log("coulnd't create get layer for: "+muniName);
+					        	return;
+					        }
+
+					        var content = "<b>רשות מקומית: "+muniObject.muniHebName+"</b><br/>"+
+					        				"תעריף נורמטיבי למגורים (ש״ח למ״ר ממוצע): "+muniObject.normative_arnona+" ש״ח<br/>"+
+					        				"תעריף בפועל (ש״ח למ״ר ממוצע): "+muniObject.real_arnona+" ש״ח<br/>"+
+					        				"<b>"+"הפרש התעריף בין המצוי לרצוי:<span dir='ltr'> "+muniObject.difference_arnona.toFixed(0)+" </span> ש״ח</b><br/>"; 
+
+					        geojsonLayer.bindPopup(content);
+
+					        map.addLayer(geojsonLayer);
+
+						});
+					}
+
+						
+				     //    else {
+				     //    	var str = createPopUpStr(results.data[i]);	
+					    //     var marker = new PruneCluster.Marker(lng, lat)
+					    //     if (results.data[i][6]!==" " || results.data[i][7]!==" ") {
+					    //     	marker.data.icon = myWheelChairIcon;
+					    //     }
+					    //     marker.data.popup= str;
+					    //     //marker.setPopupContent(str)
+					    //     pruneCluster.RegisterMarker(marker);
+
+					    // }
+					
+				}
+				
+			}
+		});
+
+
+
+
+
+	</script>
+</body>
+</html>

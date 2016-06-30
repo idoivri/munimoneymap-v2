@@ -1,0 +1,37 @@
+/*@import url('../dist/LeafletStyleSheet.css');
+*/
+body {
+    padding: 0;
+    margin: 0;
+}
+
+
+html, body, #map {
+/*    position: relative; 
+
+	direction: rtl;*/
+    height: 100%;
+    /*margin-top: 50px;*/
+}
+
+.leaflet-popup-content {
+	direction: rtl;
+	text-align: right;
+}
+
+
+.legend label,
+.legend span {
+    direction: rtl;
+    display:block;
+    float:left;
+    height:15px;
+    width:13%;
+    text-align:center;
+    font-size:10px;
+    color:#808080;
+}
+
+.legend-title {
+    direction: rtl;
+}
