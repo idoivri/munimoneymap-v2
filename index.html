@@ -46,14 +46,12 @@
 
 		muni2ContentDict = {};
 
-		// Provide your access token
-		L.mapbox.accessToken = 'pk.eyJ1IjoiaWRvaXZyaSIsImEiOiJtSDZZd0dzIn0.AGwQs7X6LESuybqo6fUVpg#10';
 		// Create a map in the div #map
 		
 		L.mapbox.accessToken = 'pk.eyJ1IjoiaWRvaXZyaSIsImEiOiJtSDZZd0dzIn0.AGwQs7X6LESuybqo6fUVpg';
 		var map = L.mapbox.map('map').setView([32.06425, 34.769722], 9);
 
-		L.mapbox.styleLayer(mapbox://styles/idoivri/ciq965t0m007xerm4qynst85d').addTo(map);
+		L.mapbox.styleLayer('mapbox://styles/idoivri/ciq965t0m007xerm4qynst85d').addTo(map);
 		
 		function getColor(d) {
 			return d > 10000 ? '#1550a3' :
