@@ -82,7 +82,7 @@
 			}
 			
 			this._div.innerHTML = '<h4>השקעה לתושב</h4>' +  (props ?
-				'<b>' + props.muniHebName + '</b><br />' + props.investment + ' ש״ח</sup>'
+				'<b>' + props.muniHebName + '</b><br />' + props.investment + ' ש״ח לתושב'
 				: 'עברו עם העכבר מעל עיר');
 		};
 
@@ -132,7 +132,10 @@
 							from + (to ? '&ndash;' + to : '+'));
 					}
 
-					div.innerHTML = labels.join('<br>');
+					div.innerHTML = '<h3 style="dir: rtl;">השתתפות ממשלתית שנתית לתושב בתקציב השוטף והפיתוח'+
+					'</h3>'+
+					// '<h5>(חינוך, רווחה, מענקי איזון, השתתפות בפיתוח והשתתפות משרדי הממשלה)</h5>'+
+					 labels.join('<br>');
 					return div;
 		};
 
