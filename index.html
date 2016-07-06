@@ -54,15 +54,16 @@
 		L.mapbox.styleLayer('mapbox://styles/idoivri/ciq965t0m007xerm4qynst85d').addTo(map);
 		
 		function getColor(d) {
-			return d > 10000 ? '#1550a3' :
-			       d > 8000  ? '#BD0026' :
-			       d > 6000  ? '#E31A1C' :
-			       d > 4000  ? '#FC4E2A' :
-			       d > 2000   ? '#FD8D3C' :
+			return d > 10000 ? '#800000' :
+			       d > 8000  ? '#D90000' :
+			       d > 6000  ? '#FF260D' :
+			       d > 4000  ? '#FF734D' :
+			       d > 2000   ? '#FFBFA6' :
 			       // d > 20   ? '#FEB24C' :
 			       // d > 10   ? '#FED976' :
-			                  '#FFEDA0';
+			                  '#fAe6d9';
 		}
+
 
 		//add control that shows interactive data
 		var info = L.control();
@@ -132,7 +133,7 @@
 							from + (to ? '&ndash;' + to : '+'));
 					}
 
-					div.innerHTML = '<h3 style="dir: rtl;">השתתפות ממשלתית שנתית לתושב בתקציב השוטף והפיתוח'+
+					div.innerHTML = '<h3 style="direction: rtl; text-align: right;">השתתפות ממשלתית שנתית לתושב בתקציב השוטף והפיתוח'+
 					'</h3>'+
 					// '<h5>(חינוך, רווחה, מענקי איזון, השתתפות בפיתוח והשתתפות משרדי הממשלה)</h5>'+
 					 labels.join('<br>');
@@ -179,13 +180,13 @@
 							//console.log("got difference ",sum);
 							var d = Number.parseFloat(sum);
 							console.log("got difference: ", d);
-						    return d > 10000  ? '#1550a3' :
-						           d > 8000  ? '#fee5d9' :
-						           d > 6000  ? '#fcbba1' :
-						           d < 4000  ? '#fc9272' :
-						           d < 2000   ? '#fb6a4a' :
+						    return d > 10000  ? '#800000' :
+						           d > 8000  ? '#D90000' :
+						           d > 6000  ? '#FF260D' :
+						           d < 4000  ? '#FF734D' :
+						           d < 2000   ? '#FFBFA6' :
 						           // d < 25   ? '#de2d26' :
-						                      '#a50f15';
+						                      '#fAe6d9';
 						}
 
 			        	var layerStyle = {
